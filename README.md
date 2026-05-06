@@ -2,6 +2,17 @@
 
 Welcome to the Azure Kubernetes Service (AKS) Resource Management and Autoscaling Lab! This comprehensive lab will guide you through essential techniques for managing resources, implementing autoscaling, and ensuring application resilience in Kubernetes.
 
+## 🐚 Choose Your Shell
+
+This lab is available in two versions:
+
+| Version | Description | Path |
+|---------|-------------|------|
+| **Bash** | Original labs using Bash/Linux shell syntax | Root chapter folders |
+| **PowerShell** | Labs converted to PowerShell syntax | [`./psversion/`](./psversion/) folder |
+
+> **PowerShell users**: Use the links in the **PowerShell Version** column below, or navigate directly to the [`psversion`](./psversion/) folder.
+
 ## 🎯 Learning Objectives
 
 By completing this lab, you will gain hands-on experience with:
@@ -16,37 +27,48 @@ By completing this lab, you will gain hands-on experience with:
 
 This lab is organized into the following chapters:
 
-- **[Chapter 0: Setup and Prerequisites](./chapter-0-setup/README.md)**
+| Chapter | Topic | Bash Version | PowerShell Version |
+|---------|-------|--------------|-------------------|
+| 0 | Setup and Prerequisites | [Bash](./chapter-0-setup/README.md) | [PowerShell](./psversion/chapter-0-setup/README.md) |
+| 1 | Resource Requests and Limits | [Bash](./chapter-1-requests-limits/README.md) | [PowerShell](./psversion/chapter-1-requests-limits/README.md) |
+| 2 | LimitRange and ResourceQuota | [Bash](./chapter-2-limitrange-quota/README.md) | [PowerShell](./psversion/chapter-2-limitrange-quota/README.md) |
+| 3 | Horizontal Pod Autoscaler (HPA) | [Bash](./chapter-3-hpa/README.md) | [PowerShell](./psversion/chapter-3-hpa/README.md) |
+| 4 | KEDA - Event-Driven Autoscaling | [Bash](./chapter-4-keda/README.md) | [PowerShell](./psversion/chapter-4-keda/README.md) |
+| 5 | Pod Disruption Budgets | [Bash](./chapter-5-pdb/README.md) | [PowerShell](./psversion/chapter-5-pdb/README.md) |
+
+### Chapter Details
+
+- **Chapter 0: Setup and Prerequisites**
   - Setting your student initials
   - Creating resource group and AKS cluster
   - Installing required tools and add-ons
 
-- **[Chapter 1: Resource Requests and Limits](./chapter-1-requests-limits/README.md)**
+- **Chapter 1: Resource Requests and Limits**
   - Understanding resource requests vs limits
   - Configuring CPU and memory resources
   - Observing QoS classes (Guaranteed, Burstable, BestEffort)
   - Testing resource enforcement and OOM scenarios
 
-- **[Chapter 2: LimitRange and ResourceQuota](./chapter-2-limitrange-quota/README.md)**
+- **Chapter 2: LimitRange and ResourceQuota**
   - Implementing default resource limits with LimitRange
   - Setting namespace-level constraints with ResourceQuota
   - Testing quota enforcement and resource tracking
   - Managing multi-tenant cluster resources
 
-- **[Chapter 3: Horizontal Pod Autoscaler (HPA)](./chapter-3-hpa/README.md)**
+- **Chapter 3: Horizontal Pod Autoscaler (HPA)**
   - Deploying metrics-server for resource metrics
   - Configuring HPA based on CPU and memory
   - Load testing and observing scale-up/scale-down behavior
   - Understanding HPA cooldown periods and thresholds
 
-- **[Chapter 4: KEDA - Event-Driven Autoscaling](./chapter-4-keda/README.md)**
+- **Chapter 4: KEDA - Event-Driven Autoscaling**
   - Installing KEDA in AKS
   - Scaling based on Azure Service Bus queue length
   - Scaling based on HTTP requests (KEDA HTTP Add-on)
   - Configuring scale-to-zero scenarios
   - Comparing KEDA with standard HPA
 
-- **[Chapter 5: Pod Disruption Budgets](./chapter-5-pdb/README.md)**
+- **Chapter 5: Pod Disruption Budgets**
   - Understanding voluntary vs involuntary disruptions
   - Configuring minAvailable and maxUnavailable constraints
   - Testing PDB during node drains

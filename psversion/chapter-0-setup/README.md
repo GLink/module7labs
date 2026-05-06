@@ -46,34 +46,34 @@ Before starting this lab, ensure you have:
 
 To avoid naming conflicts in a shared subscription, you'll use your initials for resource naming.
 
-```bash
+```powershell
 # Set your initials (use 2-4 lowercase letters)
-export STUDENT_INITIALS="abc"  # CHANGE THIS to your initials
+$STUDENT_INITIALS = "abc"  # CHANGE THIS to your initials
 
 # Verify it's set
-echo "Your initials: $STUDENT_INITIALS"
+Write-Host "Your initials: $STUDENT_INITIALS"
 ```
 
 ## 📦 Step 2: Define Resource Names
 
-```bash
+```powershell
 # Set variables for resource names
-export LOCATION="swedencentral"
-export RESOURCE_GROUP="rg-aks-lab-$STUDENT_INITIALS"
-export CLUSTER_NAME="aks-lab-$STUDENT_INITIALS"
-export SERVICE_BUS_NAMESPACE="sb-aks-lab-$STUDENT_INITIALS"
+$LOCATION = "swedencentral"
+$RESOURCE_GROUP = "rg-aks-lab-$STUDENT_INITIALS"
+$CLUSTER_NAME = "aks-lab-$STUDENT_INITIALS"
+$SERVICE_BUS_NAMESPACE = "sb-aks-lab-$STUDENT_INITIALS"
 
 # Display your configuration
-echo "Resource Configuration:"
-echo "  Location: $LOCATION"
-echo "  Resource Group: $RESOURCE_GROUP"
-echo "  Cluster Name: $CLUSTER_NAME"
-echo "  Service Bus Namespace: $SERVICE_BUS_NAMESPACE"
+Write-Host "Resource Configuration:"
+Write-Host "  Location: $LOCATION"
+Write-Host "  Resource Group: $RESOURCE_GROUP"
+Write-Host "  Cluster Name: $CLUSTER_NAME"
+Write-Host "  Service Bus Namespace: $SERVICE_BUS_NAMESPACE"
 ```
 
 ## 🔐 Step 3: Login to Azure
 
-```bash
+```powershell
 # Login to Azure
 az login
 
@@ -86,38 +86,38 @@ az account show --query "{Name:name, SubscriptionId:id, TenantId:tenantId}" --ou
 
 ## 🏗️ Step 4: Create Resource Group
 
-```bash
+```powershell
 # Create the resource group
-az group create \
-  --name $RESOURCE_GROUP \
+az group create `
+  --name $RESOURCE_GROUP `
   --location $LOCATION
 
-echo "✅ Resource group created: $RESOURCE_GROUP"
+Write-Host "✅ Resource group created: $RESOURCE_GROUP"
 ```
 
 ## ☸️ Step 5: Create AKS Cluster
 
 We'll create an AKS cluster with features needed for all lab chapters:
 
-```bash
+```powershell
 # Create AKS cluster with required features
-az aks create \
-  --resource-group $RESOURCE_GROUP \
-  --name $CLUSTER_NAME \
-  --location $LOCATION \
-  --node-count 3 \
-  --node-vm-size Standard_D4s_v5 \
-  --zones 1 2 3 \
-  --enable-managed-identity \
-  --enable-oidc-issuer \
-  --enable-workload-identity \
-  --enable-aad \
-  --enable-azure-rbac \
-  --network-plugin azure \
-  --max-pods 110 \
+az aks create `
+  --resource-group $RESOURCE_GROUP `
+  --name $CLUSTER_NAME `
+  --location $LOCATION `
+  --node-count 3 `
+  --node-vm-size Standard_D4s_v5 `
+  --zones 1 2 3 `
+  --enable-managed-identity `
+  --enable-oidc-issuer `
+  --enable-workload-identity `
+  --enable-aad `
+  --enable-azure-rbac `
+  --network-plugin azure `
+  --max-pods 110 `
   --generate-ssh-keys
 
-echo "⏳ AKS cluster creation in progress (this takes 5-10 minutes)..."
+Write-Host "⏳ AKS cluster creation in progress (this takes 5-10 minutes)..."
 ```
 
 ### Cluster Configuration Explained
@@ -131,19 +131,19 @@ echo "⏳ AKS cluster creation in progress (this takes 5-10 minutes)..."
 
 ## 🔌 Step 6: Configure kubectl Access
 
-```bash
+```powershell
 # Get AKS credentials
-az aks get-credentials \
-  --resource-group $RESOURCE_GROUP \
-  --name $CLUSTER_NAME \
+az aks get-credentials `
+  --resource-group $RESOURCE_GROUP `
+  --name $CLUSTER_NAME `
   --overwrite-existing
 
-echo "✅ kubectl configured for cluster: $CLUSTER_NAME"
+Write-Host "✅ kubectl configured for cluster: $CLUSTER_NAME"
 ```
 
 ## ✅ Step 7: Verify Cluster
 
-```bash
+```powershell
 # Check cluster connection
 kubectl cluster-info
 
@@ -171,7 +171,7 @@ Expected output:
 
 AKS clusters come with metrics-server pre-installed. Let's verify it's working:
 
-```bash
+```powershell
 # Check metrics-server pods
 kubectl get pods -n kube-system -l k8s-app=metrics-server
 
@@ -185,62 +185,60 @@ kubectl top nodes
 
 We'll create an Azure Service Bus namespace for the KEDA exercises:
 
-```bash
+```powershell
 # Create Service Bus namespace
-az servicebus namespace create \
-  --name $SERVICE_BUS_NAMESPACE \
-  --resource-group $RESOURCE_GROUP \
-  --location $LOCATION \
+az servicebus namespace create `
+  --name $SERVICE_BUS_NAMESPACE `
+  --resource-group $RESOURCE_GROUP `
+  --location $LOCATION `
   --sku Standard
 
-echo "✅ Service Bus namespace created: $SERVICE_BUS_NAMESPACE"
+Write-Host "✅ Service Bus namespace created: $SERVICE_BUS_NAMESPACE"
 
 # Create a queue
-az servicebus queue create \
-  --resource-group $RESOURCE_GROUP \
-  --namespace-name $SERVICE_BUS_NAMESPACE \
+az servicebus queue create `
+  --resource-group $RESOURCE_GROUP `
+  --namespace-name $SERVICE_BUS_NAMESPACE `
   --name orders
 
-echo "✅ Service Bus queue 'orders' created"
+Write-Host "✅ Service Bus queue 'orders' created"
 
 # Get connection string for later use
-export SERVICE_BUS_CONNECTION_STRING=$(az servicebus namespace authorization-rule keys list \
-  --resource-group $RESOURCE_GROUP \
-  --namespace-name $SERVICE_BUS_NAMESPACE \
-  --name RootManageSharedAccessKey \
-  --query primaryConnectionString \
+$SERVICE_BUS_CONNECTION_STRING = $(az servicebus namespace authorization-rule keys list `
+  --resource-group $RESOURCE_GROUP `
+  --namespace-name $SERVICE_BUS_NAMESPACE `
+  --name RootManageSharedAccessKey `
+  --query primaryConnectionString `
   --output tsv)
 
-echo "✅ Service Bus connection string retrieved"
+Write-Host "✅ Service Bus connection string retrieved"
 ```
 
 ## 📊 Step 10: Save Your Configuration
 
 Create a file to save your environment variables for future sessions:
 
-```bash
+```powershell
 # Create a configuration file
-cat > ./lab-config.sh <<EOF
+@"
 # AKS Lab Configuration for student: $STUDENT_INITIALS
-export STUDENT_INITIALS="$STUDENT_INITIALS"
-export LOCATION="$LOCATION"
-export RESOURCE_GROUP="$RESOURCE_GROUP"
-export CLUSTER_NAME="$CLUSTER_NAME"
-export SERVICE_BUS_NAMESPACE="$SERVICE_BUS_NAMESPACE"
+`$STUDENT_INITIALS = "$STUDENT_INITIALS"
+`$LOCATION = "$LOCATION"
+`$RESOURCE_GROUP = "$RESOURCE_GROUP"
+`$CLUSTER_NAME = "$CLUSTER_NAME"
+`$SERVICE_BUS_NAMESPACE = "$SERVICE_BUS_NAMESPACE"
 
 # Derived values
-export SUBSCRIPTION_ID="\$(az account show --query id -o tsv)"
-export TENANT_ID="\$(az account show --query tenantId -o tsv)"
-export AKS_OIDC_ISSUER="\$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query 'oidcIssuerProfile.issuerUrl' -o tsv)"
-export SERVICE_BUS_CONNECTION_STRING="\$(az servicebus namespace authorization-rule keys list --resource-group $RESOURCE_GROUP --namespace-name $SERVICE_BUS_NAMESPACE --name RootManageSharedAccessKey --query primaryConnectionString --output tsv)"
+`$SUBSCRIPTION_ID = `$(az account show --query id -o tsv)
+`$TENANT_ID = `$(az account show --query tenantId -o tsv)
+`$AKS_OIDC_ISSUER = `$(az aks show --resource-group `$RESOURCE_GROUP --name `$CLUSTER_NAME --query 'oidcIssuerProfile.issuerUrl' -o tsv)
+`$SERVICE_BUS_CONNECTION_STRING = `$(az servicebus namespace authorization-rule keys list --resource-group `$RESOURCE_GROUP --namespace-name `$SERVICE_BUS_NAMESPACE --name RootManageSharedAccessKey --query primaryConnectionString --output tsv)
 
-echo "Configuration loaded for student: \$STUDENT_INITIALS"
-EOF
+Write-Host "Configuration loaded for student: `$STUDENT_INITIALS"
+"@ | Set-Content -Path .\lab-config.ps1
 
-chmod +x ./lab-config.sh
-
-echo "✅ Configuration saved to lab-config.sh"
-echo "   Load it in future sessions with: source ./lab-config.sh"
+Write-Host "✅ Configuration saved to lab-config.ps1"
+Write-Host "   Load it in future sessions with: . .\lab-config.ps1"
 ```
 
 ## 🎓 Summary
@@ -259,7 +257,7 @@ You have successfully:
 ## 📝 Important Notes
 
 - **Keep your cluster running** - You'll use it for all subsequent chapters
-- **Save your lab-config.sh file** - You'll need it to restore variables
+- **Save your lab-config.ps1 file** - You'll need it to restore variables
 - **Note your resource names** - You'll reference them throughout the lab
 - **Metrics collection** - It may take 1-2 minutes for metrics to appear after pod deployment
 
@@ -267,12 +265,12 @@ You have successfully:
 
 When you start a new terminal session:
 
-```bash
+```powershell
 # Navigate to lab directory
-cd /path/to/module7labs
+Set-Location C:\path\to\module7labs
 
 # Load your configuration
-source ./lab-config.sh
+. .\lab-config.ps1
 
 # Re-authenticate if needed
 az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
@@ -282,14 +280,14 @@ az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME
 
 **⚠️ WARNING: Only run this after completing ALL chapters!**
 
-```bash
+```powershell
 # Delete the entire resource group (removes all resources)
-az group delete \
-  --name $RESOURCE_GROUP \
-  --yes \
+az group delete `
+  --name $RESOURCE_GROUP `
+  --yes `
   --no-wait
 
-echo "🗑️ Resource group deletion initiated"
+Write-Host "🗑️ Resource group deletion initiated"
 ```
 
 ## 🚀 Next Steps
